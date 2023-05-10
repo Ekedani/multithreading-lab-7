@@ -1,13 +1,14 @@
 import mpi.MPI;
 
 public class CollectiveMatrixMultiplicator {
-    public static int NUMBER_OF_ROWS_IN_A = 100;
-    public static int NUMBER_OF_COLS_IN_A = 100;
-    public static int NUMBER_OF_COLS_IN_B = 100;
+    public static int NUMBER_OF_ROWS_IN_A = 1000;
+    public static int NUMBER_OF_COLS_IN_A = 1000;
+    public static int NUMBER_OF_COLS_IN_B = 1000;
     public static int MASTER = 0;
 
     public static boolean RESULT_IS_PRINTED = false;
-    public static boolean RANDOMIZE_MATRICES = false;
+    public static boolean RANDOMIZE_MATRICES = true;
+    public static boolean VALIDATE_RESULT = true;
 
     public static void main(String[] args) {
         int taskId, tasksNumber;
@@ -86,6 +87,9 @@ public class CollectiveMatrixMultiplicator {
                 Helper.outputMatrix(c);
             }
             System.out.println("Execution time: " + (endTime - startTime) + " ns");
+            if (VALIDATE_RESULT) {
+                System.out.println("Result is valid: " + NaiveMatrixMultiplicator.validateMultiplicationResult(a, b, c));
+            }
         }
         MPI.Finalize();
     }
