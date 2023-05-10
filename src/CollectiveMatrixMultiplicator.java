@@ -1,12 +1,13 @@
 import mpi.MPI;
 
 public class CollectiveMatrixMultiplicator {
-    public static int NUMBER_OF_ROWS_IN_A = 1000;
-    public static int NUMBER_OF_COLS_IN_A = 1000;
-    public static int NUMBER_OF_COLS_IN_B = 1000;
+    public static int NUMBER_OF_ROWS_IN_A = 100;
+    public static int NUMBER_OF_COLS_IN_A = 100;
+    public static int NUMBER_OF_COLS_IN_B = 100;
     public static int MASTER = 0;
 
     public static boolean RESULT_IS_PRINTED = false;
+    public static boolean RANDOMIZE_MATRICES = false;
 
     public static void main(String[] args) {
         int taskId, tasksNumber;
@@ -21,17 +22,23 @@ public class CollectiveMatrixMultiplicator {
         long startTime = 0, endTime;
         if (taskId == MASTER) {
             System.out.println("MPI_CMM has started with " + tasksNumber + " tasks.");
-            Helper.initializeMatrixWithNumber(a, 10);
-            Helper.initializeMatrixWithNumber(b, 10);
+            if (RANDOMIZE_MATRICES) {
+                Helper.initializeMatrixWithRandom(a, 50, 500);
+                Helper.initializeMatrixWithRandom(b, 50, 500);
+            } else {
+                Helper.initializeMatrixWithNumber(a, 100);
+                Helper.initializeMatrixWithNumber(b, 100);
+            }
             startTime = System.nanoTime();
         }
 
-        int averow = NUMBER_OF_ROWS_IN_A / tasksNumber;
-        int extra = NUMBER_OF_ROWS_IN_A % tasksNumber;
+        int rowsPerTask = NUMBER_OF_ROWS_IN_A / tasksNumber;
+        int extraRows = NUMBER_OF_ROWS_IN_A % tasksNumber;
+
         var rowsCounts = new int[tasksNumber];
         var rowsOffsets = new int[tasksNumber];
         for (int i = 0; i < tasksNumber; i++) {
-            rowsCounts[i] = i < extra ? averow + 1 : averow;
+            rowsCounts[i] = i < extraRows ? rowsPerTask + 1 : rowsPerTask;
             rowsOffsets[i] = i == 0 ? 0 : rowsOffsets[i - 1] + rowsCounts[i - 1];
         }
         var rowsInTask = rowsCounts[taskId];
