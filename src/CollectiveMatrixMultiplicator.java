@@ -7,8 +7,8 @@ public class CollectiveMatrixMultiplicator {
     public static int MASTER = 0;
 
     public static boolean RESULT_IS_PRINTED = false;
-    public static boolean RANDOMIZE_MATRICES = true;
-    public static boolean VALIDATE_RESULT = true;
+    public static boolean RANDOMIZE_MATRICES = false;
+    public static boolean VALIDATE_RESULT = false;
 
     public static void main(String[] args) {
         int taskId, tasksNumber;
@@ -79,6 +79,9 @@ public class CollectiveMatrixMultiplicator {
                 MPI.OBJECT,
                 MASTER
         );
+
+        // Totally useless
+        // MPI.COMM_WORLD.Allgatherv(cRowsBuffer, 0, rowsInTask, MPI.OBJECT, c, 0, rowsCounts, rowsOffsets, MPI.OBJECT);
 
         if (taskId == MASTER) {
             endTime = System.nanoTime();
